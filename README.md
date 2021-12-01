@@ -1,11 +1,11 @@
 # IATest
 
 ## Description
-#
+
 A tiny single-header test framework for C++
 
 ## Usage Example
-#
+
 ```cpp
 #include <stdint.h>
 #include <iatest.hpp>
@@ -53,25 +53,24 @@ it should produce the following output instead.
 ![example_02_result](https://i-a-s.lk/res/images/git/iatest/example_02_result.png)
 
 ## Documentation
-#
+
 The documentation will soon be made available on this repository.
 
 ## Building
-#
+
 No building is necessary, including the iatest.hpp in your project will be all.
 
 ## Contributing
-#
+
 Please refer to the following guides:
 
 1) [Contribution Guide](https://i-a-s.lk/docs/contributing/contribution_guide/)
 2) [Style Guide](https://i-a-s.lk/docs/contributing/style_guide/)
 
 ## Roadmap
-#
+
 The roadmap for IATest can be found [here](https://i-a-s.lk/roadmaps/iatest/)
 
 ## License
-#
 
 IATest is licensed under the [Apache License 2.0](http://www.apache.org/licenses/LICENSE-2.0)
