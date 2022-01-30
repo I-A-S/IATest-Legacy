@@ -41,7 +41,6 @@ This should produce the following output.
 
 ![example_01_result](https://i-a-s.lk/res/images/git/iatest/example_01_result.png?)
 
-
 If you were to change this line from
 ```cpp
 IA_TEST_EQ(MyMathLib::multiply_by_2(3), 6);
