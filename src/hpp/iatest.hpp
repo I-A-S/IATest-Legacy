@@ -1,5 +1,5 @@
 /*
-   Copyright 2021 I-A-S
+   Copyright 2022 I-A-S
 
    Licensed under the Apache License, Version 2.0 (the "License");
    you may not use this file except in compliance with the License.
@@ -17,81 +17,91 @@
 #ifndef _IA_TEST_HPP_
 #define _IA_TEST_HPP_
 
-/* Standard Includes */
+// -----------------------------------------------------------------------
+//                               Includes
+// -----------------------------------------------------------------------
+#include <stdint.h>
 #include <iostream>
 
-/* Internal Constant Definitions */
+// -----------------------------------------------------------------------
+//                         IATest Public Interface
+// -----------------------------------------------------------------------
+#define IATEST_EXECUTE_TEST_SET(TestSet) IATest::__Internal_ExecuteTestSet(#TestSet, TestSet)
+
+#define IA_TEST_SET(SetName) void SetName(IATest::TestSetContext& context)
+
+#define IA_TEST_EQ(Value, ExpectedValue) IATest::__Internal_TestEQ(context, #Value, Value, ExpectedValue)
+#define IA_TEST_NE(Value, ExpectedValue) IATest::__Internal_TestNE(context, #Value, Value, ExpectedValue)
+
+// -----------------------------------------------------------------------
+//                       Internal Constant Definitions
+// -----------------------------------------------------------------------
 #define __IA_TEST_INTERNAL_ANSI_FG_COLOR_CODE_RED     "\033[31m"
 #define __IA_TEST_INTERNAL_ANSI_FG_COLOR_CODE_GREEN   "\033[32m"
 #define __IA_TEST_INTERNAL_ANSI_FG_COLOR_CODE_YELLOW  "\033[33m"
 #define __IA_TEST_INTERNAL_ANSI_FG_COLOR_CODE_MAGENTA "\033[35m"
 #define __IA_TEST_INTERNAL_ANSI_FG_COLOR_CODE_DEFAULT "\033[39m"
 
-/* Internal Global Variables */
-size_t __ia_test_internal_g_method_set_pass_count = SIZE_MAX;
-size_t __ia_test_internal_g_method_set_fail_count = SIZE_MAX;
+// -----------------------------------------------------------------------
+//                          IATest Implementation
+// -----------------------------------------------------------------------
+namespace IATest
+{
+    struct TestSetContext
+    {
+        TestSetContext(): m_passCount(0), m_failCount(0) {}
+        ~TestSetContext() {}
+    
+        uint64_t m_passCount;
+        uint64_t m_failCount;
+    };
 
-#define IA_TEST_RUN() __ia_test_internal_main()
-#define IA_TEST_MAIN() void __ia_test_internal_main()
+    typedef void (*TestSet_t)(TestSetContext& context);
 
-#define IA_TEST_START_METHOD_SET(method_set_name)\
-{\
-    if(__ia_test_internal_g_method_set_pass_count != SIZE_MAX)\
-    {\
-        std::cout << __IA_TEST_INTERNAL_ANSI_FG_COLOR_CODE_RED "Error : IA_TEST_START_METHOD_SET : IATest is in an invalid state. Did you forget to call IA_TEST_END_METHOD_SET()?\n" __IA_TEST_INTERNAL_ANSI_FG_COLOR_CODE_DEFAULT;\
-        return;\
-    }\
-    std::cout << __IA_TEST_INTERNAL_ANSI_FG_COLOR_CODE_MAGENTA "Started  Testing Method Set : " << #method_set_name << "\n";\
-    __ia_test_internal_g_method_set_pass_count = 0;\
-    __ia_test_internal_g_method_set_fail_count = 0;\
-}
+    static void __Internal_ExecuteTestSet(const char* testSetName, TestSet_t testSet)
+    {
+        std::cout << __IA_TEST_INTERNAL_ANSI_FG_COLOR_CODE_MAGENTA "Started  Testing Set " << testSetName << "\n";
+        TestSetContext context; testSet(context);
+        std::cout << __IA_TEST_INTERNAL_ANSI_FG_COLOR_CODE_MAGENTA "Finished Testing Set " << testSetName;
+        if(context.m_failCount == 0) std::cout << __IA_TEST_INTERNAL_ANSI_FG_COLOR_CODE_GREEN " ALL " << context.m_passCount << " TEST(S) PASSED!\n\n" __IA_TEST_INTERNAL_ANSI_FG_COLOR_CODE_DEFAULT;
+        else std::cout << __IA_TEST_INTERNAL_ANSI_FG_COLOR_CODE_RED " " << context.m_failCount << " OUT OF " << (context.m_passCount + context.m_failCount) << " TEST(S) FAILED!\n\n" __IA_TEST_INTERNAL_ANSI_FG_COLOR_CODE_DEFAULT;
+    }
 
-#define IA_TEST_END_METHOD_SET(method_set_name)\
-{\
-    if(__ia_test_internal_g_method_set_pass_count == SIZE_MAX)\
-    {\
-        std::cout << __IA_TEST_INTERNAL_ANSI_FG_COLOR_CODE_RED "Error : IA_TEST_END_METHOD_SET : IATest is in an invalid state. Did you forget to call IA_TEST_START_METHOD_SET()?\n" __IA_TEST_INTERNAL_ANSI_FG_COLOR_CODE_DEFAULT;\
-        return;\
-    }\
-    std::cout << __IA_TEST_INTERNAL_ANSI_FG_COLOR_CODE_MAGENTA "Finished Testing Method Set : " << #method_set_name;\
-    size_t _total_test_count = __ia_test_internal_g_method_set_pass_count + __ia_test_internal_g_method_set_fail_count;\
-    if(__ia_test_internal_g_method_set_fail_count == 0) std::cout << __IA_TEST_INTERNAL_ANSI_FG_COLOR_CODE_GREEN "  ALL " << _total_test_count << " TEST(S) PASSED!";\
-    else std::cout << __IA_TEST_INTERNAL_ANSI_FG_COLOR_CODE_RED " " << __ia_test_internal_g_method_set_fail_count << " OUT OF " << _total_test_count << " TEST(S) FAILED!";\
-    std::cout << "\n" __IA_TEST_INTERNAL_ANSI_FG_COLOR_CODE_DEFAULT;\
-    __ia_test_internal_g_method_set_pass_count = SIZE_MAX;\
-    __ia_test_internal_g_method_set_fail_count = SIZE_MAX;\
-}
+    template<typename T_V, typename T_EV>
+    static bool __Internal_TestEQ(TestSetContext& context, const char* description, T_V value, T_EV expectedValue)
+    {
+        std::cout << __IA_TEST_INTERNAL_ANSI_FG_COLOR_CODE_YELLOW "\tTesting " << description << "... ";
+        bool passed = (value == expectedValue);
+        if(passed)
+        {
+            std::cout << __IA_TEST_INTERNAL_ANSI_FG_COLOR_CODE_GREEN "PASS\n";
+            context.m_passCount += 1;
+        }
+        else
+        {
+            std::cout << __IA_TEST_INTERNAL_ANSI_FG_COLOR_CODE_RED "FAIL. Expected '" << expectedValue << "', but got '" << value << "'\n";
+            context.m_failCount += 1;
+        }
+        return passed;
+    }
 
-#define IA_TEST_METHOD_EQ(method, expected_result)\
-{\
-    auto result = method;\
-    std::cout << __IA_TEST_INTERNAL_ANSI_FG_COLOR_CODE_YELLOW "\t\tTesting Method : " << #method << "... ";\
-    if(result == expected_result)\
-    {\
-        std::cout << __IA_TEST_INTERNAL_ANSI_FG_COLOR_CODE_GREEN "PASS\n";\
-        __ia_test_internal_g_method_set_pass_count += 1;\
-    }\
-    else\
-    {\
-        std::cout << __IA_TEST_INTERNAL_ANSI_FG_COLOR_CODE_RED "FAIL. Expected: \'" << #expected_result << "\', but got : \'" << result << "\'\n";\
-        __ia_test_internal_g_method_set_fail_count += 1;\
-    }\
-}
-
-#define IA_TEST_METHOD_NE(method, expected_result)\
-{\
-    auto result = method;\
-    std::cout << __IA_TEST_INTERNAL_ANSI_FG_COLOR_CODE_YELLOW "\t\tTesting Method : " << #method << "... ";\
-    if(result != expected_result)\
-    {\
-        std::cout << __IA_TEST_INTERNAL_ANSI_FG_COLOR_CODE_GREEN "PASS\n";\
-        __ia_test_internal_g_method_set_pass_count += 1;\
-    }\
-    else\
-    {\
-        std::cout << __IA_TEST_INTERNAL_ANSI_FG_COLOR_CODE_RED "FAIL. Expected : not \'" << #expected_result << "\', but got \'" << result << "\'\n";\
-        __ia_test_internal_g_method_set_fail_count += 1;\
-    }\
-}
+    template<typename T_V, typename T_EV>
+    static bool __Internal_TestNE(TestSetContext& context, const char* description, T_V value, T_EV expectedValue)
+    {
+        std::cout << __IA_TEST_INTERNAL_ANSI_FG_COLOR_CODE_YELLOW "\tTesting " << description << "... ";
+        bool passed = (value != expectedValue);
+        if(passed)
+        {
+            std::cout << __IA_TEST_INTERNAL_ANSI_FG_COLOR_CODE_GREEN "PASS\n";
+            context.m_passCount += 1;
+        }
+        else
+        {
+            std::cout << __IA_TEST_INTERNAL_ANSI_FG_COLOR_CODE_RED "FAIL. Expected not '" << expectedValue << "', but got '" << value << "'\n";
+            context.m_failCount += 1;
+        }
+        return passed;
+    }
+};
 
 #endif
