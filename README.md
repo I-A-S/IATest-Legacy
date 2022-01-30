@@ -39,7 +39,7 @@ int main()
 
 This should produce the following output.
 
-![example_01_result](https://i-a-s.lk/res/images/git/iatest/example_01_result.png)
+![example_01_result](https://i-a-s.lk/res/images/git/iatest/example_01_result.png?)
 
 
 If you were to change this line from
@@ -52,7 +52,7 @@ IA_TEST_EQ(MyMathLib::multiply_by_2(3), 8);
 ```
 it should produce the following output instead.
 
-![example_02_result](https://i-a-s.lk/res/images/git/iatest/example_02_result.png)
+![example_02_result](https://i-a-s.lk/res/images/git/iatest/example_02_result.png?)
 
 ## Building
 
