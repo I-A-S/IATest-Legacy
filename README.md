@@ -57,13 +57,6 @@ it should produce the following output instead.
 
 No building is necessary, just include iatest.hpp in your project.
 
-## Contributing
-
-Please refer to the following guides:
-
-1) [Contribution Guide](https://i-a-s.lk/documents/contributing/contribution_guide/)
-2) [C++ Style Guide](https://i-a-s.lk/documents/contributing/style_guide_cpp/)
-
 ## License
 
 IATest is licensed under the [Apache License 2.0](http://www.apache.org/licenses/LICENSE-2.0)
