@@ -41,7 +41,7 @@ This should produce the following output.
 
 ![example_01_result](http://51.161.131.183/IAS/IATest/res/example_01_result.png)
 
-If you were to change this line from
+If you were to change the following line from
 ```cpp
 IA_TEST_EQ(MyMathLib::multiply_by_2(3), 6);
 ```
@@ -49,7 +49,7 @@ to
 ```cpp
 IA_TEST_EQ(MyMathLib::multiply_by_2(3), 8);
 ```
-it should produce the following output instead.
+it will produce the following output instead.
 
 ![example_02_result](http://51.161.131.183/IAS/IATest/res/example_02_result.png)
 
