@@ -1,5 +1,9 @@
 # IATest
 
+## NOTE
+
+# This version of IATest is now deprecated, please use the new IATest
+
 ## Description
 
 A tiny single-header test framework for C++
